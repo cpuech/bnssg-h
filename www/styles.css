@@ -1,0 +1,39 @@
+* { font-family: "Arial"; }
+
+h1, .h1 {
+font-size: 30;
+color: #1C1F63;
+font-weight: 600;
+}
+    
+h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+color: #1C1F62;
+font-weight: 600;
+}
+
+.navbar-nav > li > a, .navbar-brand {
+                   padding-top:25px !important; 
+                   padding-bottom:0 !important;
+                   height: 70px;
+                 }
+                 .navbar {min-height:70px !important;}
+
+
+/* Navigation bar following BNSSG HT colour scheme */
+.navbar-default .navbar-brand {background-color: #FFFFFF;}
+
+.navbar-default .navbar-nav > li > a {color: #ffffff;}
+
+.navbar {font-size: 16px;}
+
+.navbar-default {color: #ffffff; background-color: #1C1F62;}
+
+.navbar-default .navbar-brand, .navbar-default:hover .navbar-brand:hover, .navbar-brand {background-color: #ffffff}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+    color: #ffffff;
+    background-color: #0b0c27;
+}
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    color: #ffffff;     background-color: #2d329e;}
