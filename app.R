@@ -112,6 +112,7 @@ ui <- page_navbar(
             # column layout to easily modify width of "cards"
             layout_columns(
               
+              # Card with input selection
               card(
                 
                 h2("Select your inputs"),
@@ -122,9 +123,9 @@ ui <- page_navbar(
                 
               ),
               
-              # Card with tabs showing a map, chart, and table
-              
+              # Card with tabs and visuals
               card(
+                
                 h2("Select your data view"),
                 
                 navset_card_underline(
@@ -138,12 +139,14 @@ ui <- page_navbar(
                 
               ),
               
+              # width of each card - full width is 12
               col_widths = c(4, 8)
               
             )
             
   ),
   
+  # footer with BNSSG colour (option to add text and other logos in here)
   footer = div(
     style = paste("background-color:", palette[1], "; padding: 10px 0; text-align: right; height: 70px;"))
   
