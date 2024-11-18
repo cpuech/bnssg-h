@@ -1,12 +1,61 @@
 ### BNSSG BASIC SHINY APP TEMPLATE ###
 
-## Packages
+## Set up ----
+
+# packages
 library(tidyverse) #data manipulation
-library(ggiraph) #interactive plots
-library(DT) #tables
-library(leaflet) #mapping
+library(janitor) #clean_names and round_half_up
+library(readxl) #import excel spreadsheets
+library(sf) #import geography files (shapes)
+library(leaflet) #for mapping
 library(here) #project directory working
 library(shiny) #create shiny app
+library(bslib) #modern UI toolkit for shiny based on bootstrap
+library(DT) #tables
+
+# colour palette
+palette <- c("#1C1F62", "#D091FD", "#045EDA", "#008247", 
+             "#8F00B6", "#049FC1", "#9EF101", "#73D4D3")
+
+# set BNSSG bslib theme
+bnssg_theme <- bs_theme(
+  
+  # high level theming
+  version = 5, # bootstrap v5 required to use bslib components (like cards etc.)
+  bg = "white", # make background white
+  fg = "#222", # make foreground darkgrey/black
+  primary = palette[1], #main colour for buttons, etc
+  secondary = palette[3],  
+  bootswatch = "shiny", # use default shiny theme
+  base_font = "Arial",
+  
+) %>% 
+  
+  # lower level theming
+  bs_add_rules(
+    list(
+      # header/text styling 
+      "h1 {font-size:30px; font-weight: bold; color: #1C1F62;}",
+      "h2 {font-size:26px; font-weight: bold; color: #1C1F62;}",
+      "h3 {font-size:18px; font-weight: bold; color: #1C1F62;}",
+      "h4 {font-size:14px; font-weight: bold; color: #1C1F62;}",
+      # tab header settings
+      ".navbar-nav .nav-link {font-size: 16px;}",
+      ".navbar-nav .nav-link.active {color: #1C1F62;}",
+      # logo position in navigation bar
+      ".navbar .navbar-brand {
+        display: flex;
+        align-items: center;
+        padding: 0 !important;
+        height: 100%;
+      }
+      .navbar .navbar-brand img {
+        height: 70px;
+        margin-right: 10px;
+      }"
+    )
+  )
+
 
 # load dummy data for map and R dataset mtcars
 dummy_map_data <- tibble(variable = c("Option 1", "Option 2", "Option 3"),
@@ -16,89 +65,93 @@ dummy_map_data <- tibble(variable = c("Option 1", "Option 2", "Option 3"),
 data("mtcars")
 
    
-# App layout (ie. user interface)
-ui <- navbarPage(
+## App layout (ie. user interface) ----
+ui <- page_navbar(
   
-  ## Formatting ----
+  id = "nav",# id used for jumping between tabs
   
-  # Add logo to tab banner at the top with link to BNSSG HT website
+  # add BNSSG theme created in set up
+  theme = bnssg_theme,
+  
+  # Format logo in Navbar
+  
+  # then add logo with link to HT website
   title = div(
-    tags$a(img(src = "ht_logo.png")
-           , href = "https://bnssghealthiertogether.org.uk/"
-           , target = "_blank" 
-           ),
-    style = "position: relative; top: -20px;"
+    tags$a(
+      img(
+        src = "ht_logo.png",
+        href = "https://bnssghealthiertogether.org.uk/",
+        target = "_blank"
+      )
     ),
-  
-  #title for web browser tab
-  windowTitle = "BNSSG Shiny Template", 
-  
-  # Add css styles and web browser tab icon
-  header = tags$head(includeCSS("www/styles.css") # CSS styles
-                     , tags$link(rel = "shortcut icon", 
-                                 href = "ht_logo_cut.png") #Icon for browser tab
-                     ),
-  
-  ## Home tab ----
-  
-  tabPanel("Home",
-           icon = icon("home"), 
-           h1("R Shiny Template with BNSSG Theme"), 
-           h2("A subtitle"),
-           p("Some text.")
+    style = "background-color: white;" # Keeps white background
   ),
+  
+  # browser title
+  window_title = "Name for browser tab",
+  
+  # browser icon
+  header = tags$head(tags$link(rel = "shortcut icon", href = "ht_logo_cut.png") 
+  ),
+  
+  # Home tab
+  nav_panel("Home",
+            icon = icon("home"),
+            h1("Name of your app"),
+            h2("Intro"),
+            p("Background and context added here"),
+            h2("How to use this tool"),
+            p("Some explanations here"),
+            h2("Contact")
+  ),
+  
+  # Contents tab
+  nav_panel("Tab 1",
+            icon = icon("map"),
+            
+            # column layout to easily modify width of "cards"
+            layout_columns(
+              
+              card(
+                
+                h2("Select your inputs"),
+                
+                selectInput("myinputname", 
+                            label = "Example drop-down",
+                            choices = c("Option 1", "Option 2", "Option 3"))
+                
+              ),
+              
+              # Card with tabs showing a map, chart, and table
+              
+              card(
+                h2("Select your data view"),
+                
+                navset_card_underline(
+                  
+                  nav_panel("Map",
+                            leafletOutput("mymap", height = 600)),
+                  
+                  nav_panel("Table",
+                            DTOutput('mytable'))
+                )
+                
+              ),
+              
+              col_widths = c(4, 8)
+              
+            )
+            
+  ),
+  
+  footer = div(
+    style = paste("background-color:", palette[1], "; padding: 10px 0; text-align: right; height: 70px;"))
+  
+)
+  
 
-  
-  ## TAB 1 ----
-  
-  tabPanel("Tab 1",
-           icon = icon("map"), 
-           
-           # custom set up
-           fluidRow(
-             column(4, #size of column (out of 12)
-                    
-                    p("This is a tab with a map."),
-                    
-                    selectInput("myinputname", 
-                                label = "Example drop-down",
-                                choices = c("Option 1", "Option 2", "Option 3"))
-                    
-             ),
-             
-             column(8, #size of column (out of 12)
-                    
-                    leafletOutput("mymap", height = 600)
-             )
-             
-           )
-           
-    ),
-  
-  
-  ## TAB 2 ----
-  
-  tabPanel("Tab 2",
-           icon = icon("table"),
-           
-           fluidRow(
-             column(12,
-                    p("This is a tab with a table."))
-             
-           ),
-           
-           fluidRow(             
-           column(12,
-                  DTOutput('mytable'))
-           
-           )
-           
-           )
-  
-) #navbarPage
 
-
-# Server logic
+## Server logic ----
 server <- function(input, output) {
 
   # create a reactive datasets based on inputs selected
